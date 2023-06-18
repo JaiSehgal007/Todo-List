@@ -1,0 +1,256 @@
+import { StyleSheet, Text, View,Button } from 'react-native';
+
+export default function App() {
+  return (
+    <View style={styles.container}> 
+      <View>
+        <Text style={styles.dummyText}>Another piece of text!</Text>
+      </View>
+      {/* <Text style={{margin: 16, borderWidth:2 , borderColor:'red',padding: 16}}>Hello World!</Text> */}
+      {/* the above is the example of inline styling */}
+      <Text style={styles.dummyText}>Hello World!</Text>
+      <Button title='Tap me'/>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  dummyText: {
+    margin: 16, 
+    borderWidth:2 , 
+    borderColor:'blue',
+    padding: 16,
+  },
+});
+
+
+memo 2
+import { StyleSheet, Text, View,Button, TextInput } from 'react-native';
+import React from 'react';
+export default function App() {
+  return (
+    <View style={{padding:50,flexDirection:'row',width:'80%',height:300,justifyContent:'space-between',alignItems:'center'}}>
+
+      {/* justifyContent=>about main axis
+      alignItems=>about cross axis */}
+
+      <View
+        style={{
+          backgroundColor:'red',
+          // width:100,
+          // height:100,
+          justifyContent:'center',
+          alignItems:'center'
+        }}
+      >
+        <Text>1</Text>
+      </View>
+      <View
+        style={{
+          backgroundColor:'green',
+          // width:100,
+          // height:100,
+          justifyContent:'center',
+          alignItems:'center'
+        }}
+      >
+        <Text>2</Text>
+      </View>
+      <View
+        style={{
+          backgroundColor:'blue',
+          // width:100,
+          // height:100,
+          justifyContent:'center',
+          alignItems:'center'
+        }}
+      >
+        <Text>3</Text>
+      </View>
+    </View>
+  );
+}
+
+
+memo3
+import { StyleSheet, Text, View,Button, TextInput,ScrollView,FlatList} from 'react-native';
+import React from 'react';
+import { useState } from 'react';
+
+export default function App() {
+  const [enteredGoalText,setEnteredGoalText]=useState('');
+  const [courseGoals,setCourseGoals]=useState([]);
+
+  function goalInputHandler(enteredText){
+    setEnteredGoalText(enteredText);
+  };
+
+  function addGoalHandler(){
+    // setCourseGoals([...courseGoals,enteredGoalText]); thi is an example of creatinga  new array
+
+    setCourseGoals(currentCourseGoals => [
+      ...currentCourseGoals,
+      enteredGoalText,
+    ]);
+
+  };
+  return (
+    <View style={styles.appContainer}> 
+      <View style={styles.inputContainer}>
+        <TextInput style={styles.textInput} placeholder='Your course goal!' onChangeText={goalInputHandler}/>
+        {/* we are not using parenthesis in front of the name of function because it will call the function as soon as app is run */}
+        <Button title='Add Goal' onPress={addGoalHandler}/>
+      </View>
+      <View style={styles.goalsContainer}>
+        <FlatList alwaysBounceVertical={false}>
+          {courseGoals.map((goals) => (
+            <View style={styles.goalItem} key={goals}>
+              <Text style={styles.goalText}>
+                {goals}
+              </Text>
+            </View>
+          ))}
+          {/* here key prompt is required as it uniquely identifies each list item */}
+        </FlatList>
+        {/* here we have replaced scroll view with flat list which is a lazy version of scrollview and it only renders the list items that are visible on the screen not all child in the list */}
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  appContainer: {
+    flex:1,
+    paddingTop:50,
+    paddingHorizontal:16,
+  },
+  inputContainer: {
+    flex:1,
+    flexDirection: 'row',
+    justifyContent: 'space-between', 
+    alignItems:'center',
+    marginBottom:24,
+    borderBottomWidth:1,
+    borderBottomColor:'#cccccc',
+  },
+  textInput: {
+    borderWidth:1,
+    borderColor:'#cccccc',
+    width: '70%',
+    marginRight:8,
+    padding:8,
+  },
+  goalsContainer:{
+    // the fex values in the same container the the container in the ration specified
+    flex:5,
+  },
+  goalItem: {
+    margin:8,
+    padding:8,
+    borderRadius:6,
+    backgroundColor: '#5e0acc',
+    color: 'white'
+  },
+  goalText:{
+    color:'white',
+  }
+});
+
+memo4
+import { StyleSheet, Text, View,Button, TextInput,ScrollView,FlatList} from 'react-native';
+import React from 'react';
+import { useState } from 'react';
+
+export default function App() {
+  const [enteredGoalText,setEnteredGoalText]=useState('');
+  const [courseGoals,setCourseGoals]=useState([]);
+
+  function goalInputHandler(enteredText){
+    setEnteredGoalText(enteredText);
+  };
+
+  function addGoalHandler(){
+    // setCourseGoals([...courseGoals,enteredGoalText]); thi is an example of creatinga  new array
+
+    setCourseGoals(currentCourseGoals => [
+      ...currentCourseGoals,
+      // enteredGoalText, {instead of this we will render it as an object whoch as a unique key with itself}
+      {text:enteredGoalText, id: Math.random().toString()},
+    ]);
+
+  };
+  return (
+    <View style={styles.appContainer}> 
+      <View style={styles.inputContainer}>
+        <TextInput style={styles.textInput} placeholder='Your course goal!' onChangeText={goalInputHandler}/>
+        {/* we are not using parenthesis in front of the name of function because it will call the function as soon as app is run */}
+        <Button title='Add Goal' onPress={addGoalHandler}/>
+      </View>
+      <View style={styles.goalsContainer}>
+        <FlatList 
+          data={courseGoals} 
+          renderItem={(itemData)=>{
+            return(
+              <View style={styles.goalItem}>
+                <Text style={styles.goalText}>
+                  {itemData.item.text}
+                </Text>
+              </View>
+            );
+          }} 
+          keyExtractor={(item,index)=>{
+            return item.id;
+          }}
+          // this function is being used here as in the object field defined the name of key is id, and not key
+          alwaysBounceVertical={false}
+        />
+            
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  appContainer: {
+    flex:1,
+    paddingTop:50,
+    paddingHorizontal:16,
+  },
+  inputContainer: {
+    flex:1,
+    flexDirection: 'row',
+    justifyContent: 'space-between', 
+    alignItems:'center',
+    marginBottom:24,
+    borderBottomWidth:1,
+    borderBottomColor:'#cccccc',
+  },
+  textInput: {
+    borderWidth:1,
+    borderColor:'#cccccc',
+    width: '70%',
+    marginRight:8,
+    padding:8,
+  },
+  goalsContainer:{
+    // the fex values in the same container the the container in the ration specified
+    flex:5,
+  },
+  goalItem: {
+    margin:8,
+    padding:8,
+    borderRadius:6,
+    backgroundColor: '#5e0acc',
+    color: 'white'
+  },
+  goalText:{
+    color:'white',
+  }
+});
+
